@@ -172,7 +172,7 @@ ast::Send *ASTUtil::castSig(ast::Send *send, core::NameRef returns) {
 }
 
 ast::TreePtr ASTUtil::mkKwArgsHash(const ast::Send *send) {
-    if (!send->hasKwArgs()) {
+    if (send->args.empty()) {
         return nullptr;
     }
 
@@ -183,6 +183,16 @@ ast::TreePtr ASTUtil::mkKwArgsHash(const ast::Send *send) {
     for (auto i = kwStart; i < kwEnd; i += 2) {
         keys.emplace_back(send->args[i].deepCopy());
         values.emplace_back(send->args[i + 1].deepCopy());
+    }
+
+    // handle a double-splat or a hash literal as the last argument
+    if (send->hasKwSplat() || !send->hasKwArgs()) {
+        if (auto *hash = ast::cast_tree_const<ast::Hash>(send->args.back())) {
+            for (auto i = 0; i < hash->keys.size(); ++i) {
+                keys.emplace_back(hash->keys[i].deepCopy());
+                values.emplace_back(hash->values[i].deepCopy());
+            }
+        }
     }
 
     return ast::MK::Hash(send->loc, std::move(keys), std::move(values));

@@ -153,7 +153,7 @@ optional<PropInfo> parseProp(core::MutableContext ctx, const ast::Send *send) {
             return std::nullopt;
     }
 
-    if (send->numPosArgs >= 3) {
+    if (send->numPosArgs > 3) {
         // Too many args, even if all optional args were provided.
         return nullopt;
     }
@@ -194,7 +194,7 @@ optional<PropInfo> parseProp(core::MutableContext ctx, const ast::Send *send) {
     // Deep copy the rules hash so that we can destruct it at will to parse things,
     // without having to worry about whether we stole things from the tree.
     ast::TreePtr rulesTree = ASTUtil::mkKwArgsHash(send);
-    if (rulesTree == nullptr && send->args.size() >= 3) {
+    if (rulesTree == nullptr && send->args.size() > 3) {
         // No rules, but 3 args including name and type. Also not a T::Props
         return std::nullopt;
     }

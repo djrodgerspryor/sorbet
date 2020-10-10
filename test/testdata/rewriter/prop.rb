@@ -56,6 +56,8 @@ class AdvancedODM
 
     prop :ifunset, String, ifunset: ''
     prop :ifunset_nilable, T.nilable(String), ifunset: ''
+
+    prop :hash_rules, String, { enum: ["hello", "goodbye" ]
 end
 
 class PropHelpers
